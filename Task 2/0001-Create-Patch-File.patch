@@ -1,0 +1,136 @@
+From 6c8fb9bca21f106222f36eaeb1f655889ed66879 Mon Sep 17 00:00:00 2001
+From: Abita Ann Augustine <abitaaugustine@gmail.com>
+Date: Wed, 10 Jun 2020 17:19:09 +0530
+Subject: [PATCH] 'Create-Patch-File'
+
+---
+ editings.txt  | 58 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ src/App.tsx   | 11 ++++------
+ src/Graph.tsx |  2 +-
+ 3 files changed, 63 insertions(+), 8 deletions(-)
+ create mode 100644 editings.txt
+
+diff --git a/editings.txt b/editings.txt
+new file mode 100644
+index 0000000..c664230
+--- /dev/null
++++ b/editings.txt
+@@ -0,0 +1,58 @@
++17
++ extends HTMLElement
++
++
++
++52
++elem.setAttribute('view','y_line');
++      elem.setAttribute('column-pivots','["stock"]');
++      elem.setAttribute('row-pivots','["timestamp"]');
++      elem.setAttribute('columns','["top_ask_price"]');
++      elem.setAttribute('aggregates',
++        '{
++        "stock": "distinct count",
++        "top_ask_price": "avg",
++        "top_bid_price": "avg",
++        "timestamp": "distinct count"
++        }');
++
++
++
++
++
++
++
++11
++showGraph: boolean,
++
++
++26
++showGraph: false,
++
++
++
++34
++  if(this.state.showGraph)
++    {
++      return (<Graph data={this.state.data}/>)
++    }
++
++
++
++
++44
++let x = 0;
++    const interval = setInterval(() => {
++      DataStreamer.getData((serverResponds: ServerRespond[]) => {
++      // Update the state by creating a new array of data that consists of
++      // Previous data in the state and the new data from server
++        this.setState({ 
++          data: serverResponds,
++          showGraph: true,
++        });
++      });
++      x++;
++      if(x > 1000) {
++        clearInterval(interval);
++      }
++    }, 100);
+\ No newline at end of file
+diff --git a/src/App.tsx b/src/App.tsx
+index 0728518..8f374fa 100755
+--- a/src/App.tsx
++++ b/src/App.tsx
+@@ -8,6 +8,7 @@ import './App.css';
+  */
+ interface IState {
+   data: ServerRespond[],
++  
+ }
+ 
+ /**
+@@ -22,6 +23,7 @@ class App extends Component<{}, IState> {
+       // data saves the server responds.
+       // We use this state to parse data down to the child element (Graph) as element property
+       data: [],
++      
+     };
+   }
+ 
+@@ -29,20 +31,15 @@ class App extends Component<{}, IState> {
+    * Render Graph react component with state.data parse as property data
+    */
+   renderGraph() {
+-    return (<Graph data={this.state.data}/>)
++  
+   }
+ 
+   /**
+    * Get new data from server and update the state with the new data
+    */
+   getDataFromServer() {
+-    DataStreamer.getData((serverResponds: ServerRespond[]) => {
+-      // Update the state by creating a new array of data that consists of
+-      // Previous data in the state and the new data from server
+-      this.setState({ data: [...this.state.data, ...serverResponds] });
+-    });
++    
+   }
+-
+   /**
+    * Render the App react component
+    */
+diff --git a/src/Graph.tsx b/src/Graph.tsx
+index ec1430e..673a743 100644
+--- a/src/Graph.tsx
++++ b/src/Graph.tsx
+@@ -14,7 +14,7 @@ interface IProps {
+  * Perspective library adds load to HTMLElement prototype.
+  * This interface acts as a wrapper for Typescript compiler.
+  */
+-interface PerspectiveViewerElement {
++interface PerspectiveViewerElement{
+   load: (table: Table) => void,
+ }
+ 
+-- 
+2.27.0.windows.1
+
