@@ -1,0 +1,69 @@
+From 6e049edb21b1332c961cdccf48a9f0c1d6313fa1 Mon Sep 17 00:00:00 2001
+From: Abita Ann Augustine <abitaaugustine@gmail.com>
+Date: Wed, 10 Jun 2020 21:57:43 +0530
+Subject: [PATCH] 'Create-Patch-File'
+
+---
+ src/DataManipulator.ts | 14 +++-----------
+ src/Graph.tsx          | 10 +++++++---
+ 2 files changed, 10 insertions(+), 14 deletions(-)
+
+diff --git a/src/DataManipulator.ts b/src/DataManipulator.ts
+index 9bacad2..d76cd14 100644
+--- a/src/DataManipulator.ts
++++ b/src/DataManipulator.ts
+@@ -7,25 +7,17 @@ export interface Row {
+   timestamp: Date,
+   upper_bound: number,
+   lower_bound: number,
+-  trigger_alert: number,
++  trigger_alert: number|undefined,
+ }
+ 
+ 
+ export class DataManipulator {
+-  static generateRow(serverResponds: ServerRespond[]): Row[] {
++  static generateRow(serverRespond: ServerRespond[]): Row {
+     const priceABC = (serverRespond[0].top_ask.price + serverRespond[0].top_bid.price)/2;
+     const priceDEF = (serverRespond[1].top_ask.price + serverRespond[1].top_bid.price)/2;
+     const ratio = priceABC / priceDEF;
+     const upperBound = 1 + 0.05;
+     const lowerBound = 1 - 0.05;
+-    return {
+-    price_abc: priceABC,
+-    price_def: priceDEF,
+-    ratio,
+-    timestamp: serverRespond[0].timestamp > serverRespond[1].timestamp ? serverRespond[0].timestamp : serverRespond[1].timestamp,
+-    upper_bound: upperBound,
+-    lower_bound: lowerBound,
+-    trigger_alert: (ratio > upperBound || ratio < lowerBound) ? ratio : undefined,
+-    };
++    return {price_abc: priceABC, price_def: priceDEF,ratio, timestamp: (serverRespond[0].timestamp > serverRespond[1].timestamp) ? serverRespond[0].timestamp : serverRespond[1].timestamp,upper_bound: upperBound,lower_bound: lowerBound,trigger_alert: (ratio > upperBound || ratio < lowerBound) ? ratio : undefined};
+   }
+ }
+diff --git a/src/Graph.tsx b/src/Graph.tsx
+index 54ac991..aa4dbd0 100644
+--- a/src/Graph.tsx
++++ b/src/Graph.tsx
+@@ -40,11 +40,15 @@ class Graph extends Component<IProps, {}> {
+       elem.load(this.table);
+       elem.setAttribute('view', 'y_line');
+       elem.setAttribute('row-pivots', '["timestamp"]');
+-      elem.setAttribute('columns', '["top_ask_price"]');
++      elem.setAttribute('columns', '["ratio", "lower_bound","upper_bound","trigger_alert"]');
+       elem.setAttribute('aggregates', JSON.stringify({
+         price_abc: 'avg',
+-        price_def: 'avg', ratio:'avg',
+-        timestamp: 'distinct count', upper_bound: 'avg', lower_bound: 'avg', trigger_alert: 'avg',
++        price_def: 'avg',
++        ratio:'avg',
++        timestamp: 'distinct count', 
++        upper_bound: 'avg', 
++        lower_bound: 'avg', 
++        trigger_alert: 'avg',
+       }));
+     }
+   }
+-- 
+2.27.0.windows.1
+
